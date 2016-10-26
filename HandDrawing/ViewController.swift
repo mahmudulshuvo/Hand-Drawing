@@ -35,6 +35,10 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
+        
+        self.view.addSubview(drawingStackView)
+        drawingStackView.addArrangedSubview(drawingView)
+        
         for layer in layers
         {
             layer.lineCap = kCALineCapRound
@@ -46,7 +50,7 @@ class ViewController: UIViewController {
         
         // mainDrawLayer
         
-        mainDrawLayer.strokeColor = UIColor(red: 0.5, green: 0.5, blue: 1, alpha: 1).cgColor
+        mainDrawLayer.strokeColor = UIColor.blue.cgColor
         
         // coalescedDrawLayer
         
@@ -84,7 +88,7 @@ class ViewController: UIViewController {
             return
         }
         
-        let locationInView = touch.location(in: view)
+        let locationInView = touch.location(in: drawingView)
         
         for path in paths
         {
@@ -106,7 +110,7 @@ class ViewController: UIViewController {
             return
         }
         
-        let locationInView = touch.location(in: view)
+        let locationInView = touch.location(in: drawingView)
         
         // Main Draw
         mainDrawPath.addLine(to: locationInView)
@@ -120,7 +124,7 @@ class ViewController: UIViewController {
             
             for coalescedTouch in coalescedTouches
             {
-                let locationInView = coalescedTouch.location(in: view)
+                let locationInView = coalescedTouch.location(in: drawingView)
                 
                 coalescedDrawPath.addLine(to: locationInView)
                 coalescedDrawPath.move(to: locationInView)
@@ -142,6 +146,15 @@ class ViewController: UIViewController {
         super.touchesEnded(touches, with: event)
     }
     
+    
+    override func viewDidLayoutSubviews()
+    {
+        
+        drawingStackView.axis = self.view.frame.width > self.view.frame.height
+            ? UILayoutConstraintAxis.horizontal
+            : UILayoutConstraintAxis.vertical
+        drawingStackView.distribution = UIStackViewDistribution.fillEqually
+    }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
