@@ -59,7 +59,6 @@ class ViewController: UIViewController {
     }
     
 
-    
     @IBAction func btnPressed(_ sender: AnyObject) {
 
         for (path, layer) in zip(paths, layers)
@@ -83,62 +82,66 @@ class ViewController: UIViewController {
             layer.isHidden = false
         }
         
-        guard let touch = touches.first else
-        {
-            return
+        let touch = touches.first
+        
+        if(touch?.view == drawingView){
+            // Code
+            
+            let locationInView = touch?.location(in: drawingView)
+            
+            for path in paths
+            {
+                path.move(to: locationInView!)
+            }
+            
+            for layer in layers
+            {
+                layer.isHidden = false
+            }
         }
         
-        let locationInView = touch.location(in: drawingView)
-        
-        for path in paths
-        {
-            path.move(to: locationInView)
-        }
-        
-        for layer in layers
-        {
-            layer.isHidden = false
-        }
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?)
     {
         super.touchesMoved(touches, with: event)
+
+        let touch = touches.first
         
-        guard let touch = touches.first, let event = event else
-        {
-            return
-        }
-        
-        let locationInView = touch.location(in: drawingView)
-        
-        // Main Draw
-        mainDrawPath.addLine(to: locationInView)
-        mainDrawPath.move(to: locationInView)
-        mainDrawLayer.path = mainDrawPath.cgPath
-        
-        
-        //Coalesced Draw
-        if let coalescedTouches = event.coalescedTouches(for: touch)
-        {
+        if(touch?.view == drawingView){
             
-            for coalescedTouch in coalescedTouches
+            
+            let locationInView = touch?.location(in: drawingView)
+            
+            // Main Draw
+            mainDrawPath.addLine(to: locationInView!)
+            mainDrawPath.move(to: locationInView!)
+            mainDrawLayer.path = mainDrawPath.cgPath
+            
+            
+            //Coalesced Draw
+            if let coalescedTouches = event?.coalescedTouches(for: touch!)
             {
-                let locationInView = coalescedTouch.location(in: drawingView)
                 
-                coalescedDrawPath.addLine(to: locationInView)
-                coalescedDrawPath.move(to: locationInView)
+                for coalescedTouch in coalescedTouches
+                {
+                    let locationInView = coalescedTouch.location(in: drawingView)
+                    
+                    coalescedDrawPath.addLine(to: locationInView)
+                    coalescedDrawPath.move(to: locationInView)
+                }
+                
+                coalescedDrawLayer.path = coalescedDrawPath.cgPath
             }
             
-            coalescedDrawLayer.path = coalescedDrawPath.cgPath
+            var foo = Double(1)
+            
+            for bar in 0 ... 4_000_000
+            {
+                foo += sqrt(Double(bar))
+            }
         }
-        
-        var foo = Double(1)
-        
-        for bar in 0 ... 4_000_000
-        {
-            foo += sqrt(Double(bar))
-        }
+
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?)
